@@ -3,6 +3,7 @@ use Moo;
 use MooX::Types::MooseLike::Base qw(Bool HashRef ArrayRef Maybe Str Int);
 
 use File::Spec;
+use File::HomeDir;
 use Cwd;
 use Scalar::Util qw(openhandle);
 use Fcntl qw(O_CREAT O_EXCL O_WRONLY);
@@ -214,7 +215,8 @@ sub load_file {
     my $filename = $args{filename};
 
     # Do some canonicalization
-    $filename =~ s/^~/$ENV{'HOME'}/g;
+    my $home  = File::HomeDir->my_home;
+    $filename =~ s/^~/$home/;
     $filename = eval { Cwd::abs_path( File::Spec->rel2abs($filename, $args{relative}) ) }
         || $filename;
     $filename = File::Spec->canonpath( $filename );
